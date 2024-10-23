@@ -1,0 +1,190 @@
+<div class="container max-w-7xl mx-auto bg-dark-gray shadow-lg rounded-lg p-6 border border-dark-gray-light space-x-8 animate-fadeIn">
+
+    <div class="form-section w-1/2">
+        <div *ngIf="mensajeExito" class="p-4 mb-4 text-sm text-light-green rounded-lg bg-dark-green transition-transform transform hover:scale-110 duration-300 neon-alert" role="alert">
+            <span class="font-semibold"></span> {{ mensajeExito }}
+        </div>
+        <div *ngIf="mensajeError" class="p-4 mb-4 text-sm text-light-red rounded-lg bg-dark-red transition-transform transform hover:scale-110 duration-300 neon-alert" role="alert">
+            <span class="font-semibold"></span> {{ mensajeError }}
+        </div>
+
+        <form [formGroup]="formularioEmpleados" (ngSubmit)="registrarEmpleado()">
+            <div class="mb-6">
+                <label for="matricula" class="block mb-2 text-sm font-medium text-light-green">Matrícula:</label>
+                <input type="text" id="matricula" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg focus:ring-light-green focus:border-light-green block w-full p-2.5 transition-colors duration-300 ease-in-out neon-input" 
+                placeholder="Ingrese su matrícula" formControlName="matricula" />
+            </div>
+            <div class="mb-6">
+                <label for="nombre" class="block mb-2 text-sm font-medium text-light-green">Nombre:</label>
+                <input type="text" id="nombre" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg focus:ring-light-green focus:border-light-green block w-full p-2.5 transition-colors duration-300 ease-in-out neon-input" 
+                placeholder="Ingrese su nombre" formControlName="nombre" />
+            </div>
+            <div class="mb-6">
+                <label for="email" class="block mb-2 text-sm font-medium text-light-green">Correo:</label>
+                <input type="email" id="email" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg focus:ring-light-green focus:border-light-green block w-full p-2.5 transition-colors duration-300 ease-in-out neon-input" 
+                placeholder="Ingrese su correo" formControlName="email" />
+            </div>
+            <div class="mb-6">
+                <label for="edad" class="block mb-2 text-sm font-medium text-light-green">Edad:</label>
+                <input type="number" id="edad" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg focus:ring-light-green focus:border-light-green block w-full p-2.5 transition-colors duration-300 ease-in-out neon-input" 
+                placeholder="Ingrese su edad" formControlName="edad" />
+            </div>
+            <div class="mb-6">
+                <label for="horas" class="block mb-2 text-sm font-medium text-light-green">Horas trabajadas:</label>
+                <input type="number" id="horas" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg focus:ring-light-green focus:border-light-green block w-full p-2.5 transition-colors duration-300 ease-in-out neon-input" 
+                placeholder="Ingrese las horas trabajadas" formControlName="horas" />
+            </div>
+            <div class="flex justify-between items-center">
+                <button type="submit" class="text-white bg-light-green hover:bg-dark-green focus:ring-4 focus:outline-none focus:ring-light-green-light font-medium rounded-lg text-sm w-48 py-2.5 transition-transform duration-300 ease-in-out hover:scale-110 neon-button">
+                    Registrar
+                </button>
+                
+                <button (click)="toggleTabla()" class="text-white bg-light-green hover:bg-dark-green focus:ring-4 focus:outline-none focus:ring-light-green-light font-medium rounded-lg text-sm w-48 py-2.5 transition-transform duration-300 ease-in-out hover:scale-110 neon-button">
+                    Imprimir
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <div class="tabla-section w-1/2">
+        <div *ngIf="mostrarTabla" class="animate-fadeIn">
+            <div class="relative overflow-x-auto shadow-md sm:rounded-lg border border-dark-gray-light">
+                <table class="w-full text-sm text-left text-light-gray">
+                    <thead class="text-xs text-gray-300 uppercase bg-dark-gray-light">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Matrícula</th>
+                            <th scope="col" class="px-6 py-3">Nombre</th>
+                            <th scope="col" class="px-6 py-3">Correo</th>
+                            <th scope="col" class="px-6 py-3">Edad</th>
+                            <th scope="col" class="px-6 py-3">Horas trabajadas</th>
+                            <th scope="col" class="px-6 py-3">Pago normal</th>
+                            <th scope="col" class="px-6 py-3">Pago extra</th>
+                            <th scope="col" class="px-6 py-3">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let empleado of listaEmpleados" class="border-b hover:bg-dark-gray-light transition-colors duration-300">
+                            <td class="px-6 py-4">{{ empleado.matricula }}</td>
+                            <td class="px-6 py-4">{{ empleado.nombre }}</td>
+                            <td class="px-6 py-4">{{ empleado.email }}</td>
+                            <td class="px-6 py-4">{{ empleado.edad }}</td>
+                            <td class="px-6 py-4">{{ empleado.horas }}</td>
+                            <td class="px-6 py-4">{{ calcularPagoNormal(empleado.horas) | currency }}</td>
+                            <td class="px-6 py-4">{{ calcularPagoExtra(empleado.horas) | currency }}</td>
+                            <td class="px-6 py-4">{{ (calcularPagoNormal(empleado.horas) + calcularPagoExtra(empleado.horas)) | currency }}</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="bg-dark-gray-light">
+                        <tr>
+                            <th scope="col" colspan="7" class="px-6 py-3 text-right text-gray-300">Total de pagos:</th>
+                            <td class="px-6 py-3 text-light-gray">{{ totalPagos }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="mt-6 space-y-4">
+                <div class="flex items-center space-x-4">
+                    <label for="matriculaModificar" class="block text-sm font-medium text-light-green">Ingresar matrícula para modificar:</label>
+                    <input type="text" id="matriculaModificar" [(ngModel)]="matriculaModificar" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg w-64 p-2.5 transition-colors duration-300 ease-in-out neon-input" placeholder="Ingrese la matrícula" />
+                    <button (click)="buscarEmpleado()" class="bg-dark-green text-white px-4 py-2.5 rounded hover:bg-dark-green-dark transition-colors duration-300 ease-in-out">Modificar</button>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <label for="matriculaEliminar" class="block text-sm font-medium text-light-green">Ingresar matrícula para eliminar:</label>
+                    <input type="text" id="matriculaEliminar" [(ngModel)]="matriculaEliminar" class="bg-dark-gray border border-dark-gray-light text-light-green rounded-lg w-64 p-2.5 transition-colors duration-300 ease-in-out neon-input" placeholder="Ingrese la matrícula" />
+                    <button (click)="eliminarEmpleado()" class="bg-dark-red text-white px-4 py-2.5 rounded hover:bg-dark-red-dark transition-colors duration-300 ease-in-out">Eliminar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    @keyframes fadeIn {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+    }
+
+    @keyframes neonGlow {
+        0% {
+            box-shadow: 0 0 10px green, 0 0 20px green, 0 0 30px green, 0 0 40px green;
+        }
+        100% {
+            box-shadow: 0 0 20px green, 0 0 30px green, 0 0 40px green, 0 0 50px green;
+        }
+    }
+
+    @keyframes neonGlowRed {
+        0% {
+            box-shadow: 0 0 10px red, 0 0 20px red, 0 0 30px red, 0 0 40px red;
+        }
+        100% {
+            box-shadow: 0 0 20px red, 0 0 30px red, 0 0 40px red, 0 0 50px red;
+        }
+    }
+
+    .neon-input:focus {
+        animation: neonGlow 1.5s infinite alternate;
+    }
+
+    .neon-alert {
+        animation: neonGlow 1.5s infinite alternate;
+    }
+
+    .neon-button:hover {
+        animation: neonGlow 1.5s infinite alternate;
+    }
+
+    .bg-dark-gray {
+        background-color: #2c2c2c;
+    }
+
+    .bg-dark-gray-light {
+        background-color: #3c3c3c;
+    }
+
+    .bg-dark-green {
+        background-color: #267326;
+    }
+
+    .bg-dark-green-dark {
+        background-color: #1d5a1d;
+    }
+
+    .bg-dark-red {
+        background-color: #cc3333;
+    }
+
+    .bg-dark-red-dark {
+        background-color: #a52626;
+    }
+
+    .text-light-green {
+        color: #00ff00;
+    }
+
+    .text-light-green-light {
+        color: #33ff33;
+    }
+
+    .text-light-red {
+        color: #ff0000;
+    }
+
+    .text-light-gray {
+        color: #d1d1d1;
+    }
+
+    .border-dark-gray-light {
+        border-color: #3c3c3c;
+    }
+
+    .transition-transform {
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 1s ease-in-out;
+    }
+</style>
