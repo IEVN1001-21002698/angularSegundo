@@ -1,0 +1,89 @@
+<div class="container">
+    <div class="row">
+      <div class="card">
+        <div class="card-header">
+          <button
+            class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center me-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            [routerLink]="['/humani/agregar']"
+          >
+          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44771 1 1v3M3 9v9c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1V9M3 9h18M8 9V5m4 4V5m4 4V5m-6 9h2m0 0h2m-2 0v-2m0 2v2"/>
+          </svg>
+   
+            Agregar
+          </button>
+          Lista Alumnos IRIC
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-2">Filtrar por:</div>
+            <div class="col-md-4">
+              <input
+                [(ngModel)]="listFilter"
+                class="form-control"
+                name="filter"
+                type="text"
+              />
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h3>Filtro:{{ listFilter }}</h3>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table table-striped" *ngIf="alumnosIric.length">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Matricula</th>
+                  <th>Nombre</th>
+                  <th>Apaterno</th>
+                  <th>Amaterno</th>
+                  <th>Correo</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="
+                    let alumno of dataSource.alumnos | alumnoFilter : listFilter
+                  "
+                >
+                  <td>{{ alumno.matricula }}</td>
+                  <td>{{ alumno.nombre | uppercase }}</td>
+                  <td>{{ alumno.apaterno }}</td>
+                  <td>{{ alumno.amaterno }}</td>
+                  <td>{{ alumno.correo }}</td>
+   
+                  <td>
+                    <button
+                      class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center me-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-900"
+                    [routerLink]="['/humani/editar',alumno.matricula]"
+   
+                    >
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 18 20">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4H1m3 4H1m3 4H1m3 4H1m6.071.286a3.429 3.429 0 1 1 6.858 0M4 1h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1Zm9 6.5a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0Z"/>
+                  </svg>
+   
+                      Editar
+                    </button>
+                  </td>
+                  <td>
+                    <button
+                      class="text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center me-2 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900"
+                    [routerLink]="['/humani/eliminar',alumno.matricula]" >
+                    <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v9M3 15h18M8 15v4m4-4v4m4-4v4m-5.5061-7.4939L12 10m0 0 1.5061-1.50614M12 10l1.5061 1.5061M12 10l-1.5061-1.50614"/>
+                    </svg>
+   
+                      Eliminar
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   

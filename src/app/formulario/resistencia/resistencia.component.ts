@@ -1,63 +1,134 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-resistencia',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './resistencia.component.html',
-  styleUrls: ['./resistencia.component.css'],
+  styleUrls: ['./resistencia.component.css']
 })
-export class ResistenciaComponent {
-  colores = [
-    { nombre: 'Negro', valor: 0 },
-    { nombre: 'Marrón', valor: 1 },
-    { nombre: 'Rojo', valor: 2 },
-    { nombre: 'Naranja', valor: 3 },
-    { nombre: 'Amarillo', valor: 4 },
-    { nombre: 'Verde', valor: 5 },
-    { nombre: 'Azul', valor: 6 },
-    { nombre: 'Violeta', valor: 7 },
-    { nombre: 'Gris', valor: 8 },
-    { nombre: 'Blanco', valor: 9 },
-  ];
+export default class ResistenciaComponent implements OnInit {
 
-  multiplicadores = [
-    { nombre: 'Negro', valor: 1 },
-    { nombre: 'Marrón', valor: 10 },
-    { nombre: 'Rojo', valor: 100 },
-    { nombre: 'Naranja', valor: 1000 },
-    { nombre: 'Amarillo', valor: 10000 },
-    { nombre: 'Verde', valor: 100000 },
-    { nombre: 'Azul', valor: 1000000 },
-    { nombre: 'Dorado', valor: 0.1 },
-    { nombre: 'Plateado', valor: 0.01 },
-  ];
+  formulario!: FormGroup;
+  resultados: any[] = [];
+  
+  colores: { [key: number]: string } = {
+    0: 'Negro',
+    1: 'Café',
+    2: 'Rojo',
+    3: 'Naranja',
+    4: 'Amarillo',
+    5: 'Verde',
+    6: 'Azul',
+    7: 'Violeta',
+    8: 'Gris',
+    9: 'Blanco'
+  };
+  
+  colores2: { [key: number]: string } = {
+    1: 'Negro',
+    10: 'Café',
+    100: 'Rojo',
+    1000: 'Naranja',
+    10000: 'Amarillo',
+    100000: 'Verde',
+    1000000: 'Azul',
+    10000000: 'Violeta',
+    100000000: 'Gris',
+    1000000000: 'Blanco'
+  };
 
-  tolerancias = [
-    { nombre: 'Marrón', valor: 1 },
-    { nombre: 'Rojo', valor: 2 },
-    { nombre: 'Verde', valor: 0.5 },
-    { nombre: 'Azul', valor: 0.25 },
-    { nombre: 'Violeta', valor: 0.1 },
-    { nombre: 'Gris', valor: 0.05 },
-    { nombre: 'Dorado', valor: 5 },
-    { nombre: 'Plateado', valor: 10 },
-  ];
+  constructor() {}
 
-  color1 = 0;
-  color2 = 0;
-  multiplicador = 1;
-  tolerancia = 5;
-
-  resultado: { valor: number; maximo: number; minimo: number } | null = null;
+  ngOnInit(): void {
+    this.formulario = new FormGroup({
+      color1: new FormControl('', Validators.required),
+      color2: new FormControl('', Validators.required),
+      color3: new FormControl('', Validators.required),
+      tolerancia: new FormControl('', Validators.required)
+    });
+  }
 
   calcular() {
-    const valorBase = (this.color1 * 10 + this.color2) * this.multiplicador;
-    const maximo = valorBase * (1 + this.tolerancia / 100);
-    const minimo = valorBase * (1 - this.tolerancia / 100);
+    const col1 = Number(this.formulario.get('color1')?.value); // Convertimos a número
+    const col2 = Number(this.formulario.get('color2')?.value); // Convertimos a número
+    const col3 = Number(this.formulario.get('color3')?.value); // Convertimos a número
+    const tol = Number(this.formulario.get('tolerancia')?.value); // Convertimos a número
+    
+    const valor = ((col1 * 10) + col2) * col3;
+    const tolerancia = tol;
+    const valormax = valor + (valor * tolerancia);
+    const valormin = valor - (valor * tolerancia);
+    
+    const resultado = {
+      colo1: this.colores[col1],
+      colo2: this.colores[col2],
+      colo3: this.colores2[col3],
+      tolerancia,
+      valor,
+      valormax,
+      valormin
+    };
 
-    this.resultado = { valor: valorBase, maximo, minimo };
+    this.resultados.push(resultado);
+    this.guardarEnLocalStorage({ color1: col1, color2: col2, color3: col3, tolerancia: tol });
   }
+
+  guardarEnLocalStorage(formData: any) {
+    let datosGuardados = JSON.parse(localStorage.getItem('datosResistencia') || '[]');
+    datosGuardados.push(formData);
+    localStorage.setItem('datosResistencia', JSON.stringify(datosGuardados));
+  }
+
+  imprimir() {
+    const datosGuardados = JSON.parse(localStorage.getItem('datosResistencia') || '[]');
+    this.resultados = datosGuardados.map((data: any) => {
+      const col1 = Number(data.color1);
+      const col2 = Number(data.color2);
+      const col3 = Number(data.color3);
+      const tolerancia = Number(data.tolerancia);
+  
+      // Recalcula los valores
+      const valor = ((col1 * 10) + col2) * col3;
+      const valormax = valor + (valor * tolerancia);
+      const valormin = valor - (valor * tolerancia);
+  
+      return {
+        colo1: this.colores[col1],
+        colo2: this.colores[col2],
+        colo3: this.colores2[col3],
+        tolerancia,
+        valor,
+        valormax,
+        valormin
+      };
+    });
+  }
+  
+
+  vaciarLocalStorage() {
+    localStorage.removeItem('datosResistencia');
+    this.resultados = []; // Limpiar la tabla también
+  }
+
+  colorToClass(colorName: string) {
+    const colorClasses: { [key: string]: string } = {
+      'Negro': 'bg-black text-white',
+      'Café': 'bg-amber-900 text-white',   // Usamos 'amber' para representar café
+      'Rojo': 'bg-red-500 text-white',
+      'Naranja': 'bg-orange-500 text-white', // Clase correcta para naranja
+      'Amarillo': 'bg-yellow-500 text-black', // Clase correcta para amarillo
+      'Verde': 'bg-green-500 text-white',
+      'Azul': 'bg-blue-500 text-white',
+      'Violeta': 'bg-purple-500 text-white', // Clase correcta para violeta
+      'Gris': 'bg-gray-500 text-white',
+      'Blanco': 'bg-white text-black' // Texto en negro para fondo blanco
+    };
+    
+    return colorClasses[colorName] || 'bg-transparent'; // Fondo transparente por defecto
+  }
+  
 }
